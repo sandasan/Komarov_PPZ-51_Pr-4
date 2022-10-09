@@ -135,6 +135,29 @@
         <!-- Заголовок з описом Завдання 4 -->
         <div class="task-header"><strong>Завдання 4.</strong> Зашифрувати своє прізвище над латинським алфавітом за
           допомогою шифру Плейфера. Для створення ключа скористатись ключем, отриманим в завданні 1.</div>
+        <div class="mui-textfield centralized">
+          <label>Текст для шифрування (великими літерами, за замовченням KOMAROV)</label>
+          <input class="centralized" type="text" id="task4Text">
+        </div>
+        <div class="mui-textfield centralized">
+          <label>Ключ для шифрування (довільне слово великими літерами, за
+            замовченням WINNER)</label>
+          <input class="centralized" type="text" id="task4Key">
+          <div class="centralized"><button type="submit" class="mui-btn mui-btn--primary mui-btn--raised"
+              onclick="task4GenerateKey()">Згенерувати</button>
+          </div>
+        </div>
+        <div class="mui-textfield centralized">
+          <label>Криптограма</label>
+          <input class="centralized" type="text" id="task4Answer">
+        </div>
+        <div class="centralized"><button type="submit" class="mui-btn mui-btn--primary mui-btn--raised" onclick="task4Submit(
+                    document.getElementById('task4Text').value.length == 0 ? undefined : 
+                    document.getElementById('task4Text').value, 
+                    document.getElementById('task4Key').value.length == 0 ? undefined : 
+                    document.getElementById('task4Key').value
+                  )">Зашифрувати</button>
+        </div>
       </div>
     </div>
     <!-- Вкладка Завдання 5 -->

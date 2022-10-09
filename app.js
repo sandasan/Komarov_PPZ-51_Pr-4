@@ -8,12 +8,17 @@ const alphabet = 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z _';
 const slogan = 'UKRAINEVYCTO_';
 // Ключ за замовчуванням для Завдання 3
 const defaultTask3Key = 'WINNER';
+// Ключ за замовчуванням для Завдання 4
+const defaultTask4Key = [
+    ['K', 'W', 'R', 'H', ','],
+    ['P', 'T', 'B', 'N', 'U'],
+    ['_', 'D', 'O', 'Z', 'E'],
+    ['J', 'F', '.', 'C', 'Y'],
+    ['V', 'G', 'A', 'I', 'X'],
+    ['M', '-', 'Q', 'L', 'S']
+];
 
 // Функція для отримання випадкового цілого числа у діапазоні від 0 до max
-/* function getRandomInt(max) {
-    const result = Math.floor(Math.random() * max);
-    return result.toString().length == 1 ? '0' + result.toString() : result.toString();
-} */
 function getRandomInt(max) {
     return Math.floor(Math.random() * max);
 }
@@ -28,7 +33,8 @@ function task1GenerateKey() {
     // Масив для запам'ятовування зенерованих чисел для формування випадкового ключа
     let resultArray = [];
     // Беремо ключ за замовченям для отримання списку чисел для генерації ключа
-    let arrayFromDefaultKey = defaultTask1Key.split(' ');
+    const arrayFromDefaultKey = defaultTask1Key.split(' ');
+    const arrayFromAlphabet = defaultTask1Key.split(' ');
     // Формуємо список використаних чисел
     const usedNumbersList = {};
     arrayFromDefaultKey.forEach((number) => {
@@ -38,9 +44,9 @@ function task1GenerateKey() {
     // Рахуємо згенеровані числа
     let numbersCount = 0;
     // Генеруємо числа, доти їх не набереться 27 (00 - 26)
-    while (numbersCount < 27) {
+    while (numbersCount < arrayFromAlphabet.length) {
         // Генеруємо число із заданого діапазону
-        let generatedNumber = getTwoDigitNumberAsString(getRandomInt(27));
+        let generatedNumber = getTwoDigitNumberAsString(getRandomInt(arrayFromAlphabet.length));
         // Якщо це число не використане, додаємо його до рядка результату (result) та відмічаємо його в списку usedNumbersList використаним
         if (!usedNumbersList[generatedNumber]) {
             resultArray.push(generatedNumber);
@@ -84,7 +90,7 @@ function task2GenerateKey() {
     // Масив з символів алфавіту
     const arrayFromAlphabet = alphabet.split(' ');
     // Беремо ключ за замовченям для отримання списку чисел для генерації ключа
-    let arrayFromDefaultKey = defaultTask1Key.split(' ');
+    const arrayFromDefaultKey = defaultTask1Key.split(' ');
     // Формуємо список використаних чисел
     const usedNumbersList = {};
     arrayFromDefaultKey.forEach((number) => {
@@ -97,15 +103,14 @@ function task2GenerateKey() {
     while (numbersCount < 13) {
         // Генеруємо число із заданого діапазону (00 - 25), виключаючи індекс 26 - символа підкреслення
         // let generatedNumber = getTwoDigitNumberAsString(getRandomInt(26));
-        let generatedNumber = getRandomInt(26);
+        let generatedNumber = getRandomInt(arrayFromAlphabet.length - 1);
         // Якщо це число не використане, додаємо його до рядка результату (result) та відмічаємо його в списку usedNumbersList використаним
         if (!usedNumbersList[generatedNumber]) {
             console.log('generatedNumber:', generatedNumber);
             resultArray.push(generatedNumber);
             usedNumbersList[generatedNumber] = true;
             // Додаємо у рядок, що зберігається у змінній ключа, символ з алфавіту за щойно згенерованим індексом
-            // result += arrayFromAlphabet[parseInt(generatedNumber)]; // parseInt(generatedNumber) - отримуємо ціле число зі значення змінної generatedNumber, тому що воно там у вигляді рядка (текста)
-            result += arrayFromAlphabet[generatedNumber]; // parseInt(generatedNumber) - отримуємо ціле число зі значення змінної generatedNumber, тому що воно там у вигляді рядка (текста)
+            result += arrayFromAlphabet[generatedNumber];
             // Та збільшуємо значення лічильника чисел на 1
             numbersCount++;
         }
@@ -167,6 +172,11 @@ function getKeyLength() {
     return textToEncrypt.length < keyLength ? textToEncrypt.length : keyLength;
 }
 
+// Функція отримання модульної суми
+function getModuleSum(number1, number2, maxNumber) {
+    return (number1 + number2) % maxNumber;
+}
+
 // Функція генерування ключа для Завдання 3
 function task3GenerateKey() {
     // Змінна для формування ключа
@@ -178,52 +188,91 @@ function task3GenerateKey() {
     const arrayFromAlphabet = alphabet.split(' ');
     // Генеруємо ключ
     for (let i = 0; i < keyLength; i++) {
-        // Генеруємо число із заданого діапазону (00 - 25), виключаючи індекс 26 - символа підкреслення
-        let generatedNumber = getTwoDigitNumberAsString(getRandomInt(26));
+        // Генеруємо число із заданого діапазону (00 - 25), виключаючи індекс 26 (arrayFromAlphabet.length - 1) - символа підкреслення
+        let generatedNumber = getRandomInt(arrayFromAlphabet.length - 1);
         // Додаємо у рядок, що зберігається у змінній ключа, символ з алфавіту за щойно згенерованим індексом
-        result += arrayFromAlphabet[parseInt(generatedNumber)]; // parseInt(generatedNumber) - отримуємо ціле число зі значення змінної generatedNumber, тому що воно там у вигляді рядка (текста)
+        result += arrayFromAlphabet[generatedNumber];
     }
     // Вставляємо ключ у поле для ввода ключа
     document.getElementById('task3Key').value = result;
 };
 
 // Функція шифрування текста для Завдання 3
-function task3Submit(text = defaultText, key = slogan) {
+function task3Submit(text = defaultText, key = defaultTask3Key) {
     let result = '';
-    // Формуємо таблицю замін для формування криптограми
-    let replacementsTable = {};
+    // Формуємо рядок довжини тексту для шифрування із ключа, заповнюючи його символами ключа, поки він весь не заповниться
+    let keyRow = '';
+    for (let i = 0; i < text.length; i++) {
+        keyRow += key[i % key.length];
+    }
+    console.log('text:', text);
+    console.log('keyRow:', keyRow);
     // Масив з символів алфавіту
     const arrayFromAlphabet = alphabet.split(' ');
-    // Змінна для збереження індексу поточного символа алфавіту
-    let alphabetCharIndex = 0;
-    for (let i = 0; i < 27; i++) {
-        // Якщо у рядку key за індексом i існує символ, то записуємо в таблицю замін його
-        if (key[i]) {
-            replacementsTable[i] = key[i];
-        }
-        // Інакше (якщо такого символу нема) додаємо далі у таблицю замін найперший символ з алфавіту, який не зустрічається в рядку ключа (key)
-        else {
-            // Поки рядок ключа містить символ алвавіту за індексом alphabetCharIndex, переходимо до наступного індексу
-            while(key.includes(arrayFromAlphabet[alphabetCharIndex])) {
-                alphabetCharIndex++;
-            }
-            // А коли такого символу немає, - дописуємо його в таблицю замін
-            replacementsTable[i] = arrayFromAlphabet[alphabetCharIndex];
-            alphabetCharIndex++;
-        }
-    }
-    console.log('Таблиця замін:', replacementsTable);
-    for (let char of text) {
-        console.log('char:', char);
+    for (let i = 0; i < text.length; i++) {
+        console.log('char:', text[i]);
         // 1. Знаходимо індекс символа тексту в алфавіті (alphabet)
-        const charIndexInAlphabet = arrayFromAlphabet.indexOf(char).toString();
+        const charIndexInAlphabet = arrayFromAlphabet.indexOf(text[i]);
         console.log('Індекс символа тексту в алфавіті:', charIndexInAlphabet);
-        // 2. Знаходимо елемент таблиці замін за цим індексом
-        const replacementsTableElementByCharIndex = replacementsTable[charIndexInAlphabet];
-        console.log('Елемент таблиці замін за цим індексом:', replacementsTableElementByCharIndex);
-        // 3. Додаємо знайдений символ зашифрованого тексту в рядок результату (result)
-        result += replacementsTableElementByCharIndex;
+        // 2. Знаходимо індекс символа рядку з ключа в алфавіті
+        const keyRowCharIndexInAlphabet = arrayFromAlphabet.indexOf(keyRow[i]);
+        console.log('Індекс символа рядку з ключа в алфавіті:', keyRowCharIndexInAlphabet);
+        // 2. Знаходимо модульну суму алфавітних індексів відповідних літер з тексту для шифрування та рядка із ключа, беремо з алфавіту символ за індексом, що дорівнює цій сумі, та додаємо цей символ у рядок криптограми (result)
+        const indexesModuleSum = getModuleSum(charIndexInAlphabet, keyRowCharIndexInAlphabet, arrayFromAlphabet.length);
+        console.log('Модульна сума індексів:', indexesModuleSum);
+        console.log('Символ в алфавіті за цим індексом:', arrayFromAlphabet[indexesModuleSum]);
+        result += arrayFromAlphabet[indexesModuleSum];
     }
     // Вставляємо зашифрований текст (критпограму) в поле Завдання 2 для криптограми
     document.getElementById('task3Answer').value = result;
+};
+
+// Функція генерування ключа для Завдання 3
+function task4GenerateKey() {
+    // Змінна для формування ключа
+    let result = '';
+    // Обчислюємо довжину ключа (6-9 символів, але не більше за довжину тексту для шифрування)
+    const keyLength = getKeyLength();
+    console.log('Довжина ключа:', keyLength);
+    // Масив з символів алфавіту
+    const arrayFromAlphabet = alphabet.split(' ');
+    // Генеруємо ключ
+    for (let i = 0; i < keyLength; i++) {
+        // Генеруємо число із заданого діапазону (00 - 25), виключаючи індекс 26 (arrayFromAlphabet.length - 1) - символа підкреслення
+        let generatedNumber = getRandomInt(arrayFromAlphabet.length - 1);
+        // Додаємо у рядок, що зберігається у змінній ключа, символ з алфавіту за щойно згенерованим індексом
+        result += arrayFromAlphabet[generatedNumber];
+    }
+    // Вставляємо ключ у поле для ввода ключа
+    document.getElementById('task4Key').value = result;
+};
+
+// Функція шифрування текста для Завдання 3
+function task4Submit(text = defaultText, key = defaultTask3Key) {
+    let result = '';
+    // Формуємо рядок довжини тексту для шифрування із ключа, заповнюючи його символами ключа, поки він весь не заповниться
+    let keyRow = '';
+    for (let i = 0; i < text.length; i++) {
+        keyRow += key[i % key.length];
+    }
+    console.log('text:', text);
+    console.log('keyRow:', keyRow);
+    // Масив з символів алфавіту
+    const arrayFromAlphabet = alphabet.split(' ');
+    for (let i = 0; i < text.length; i++) {
+        console.log('char:', text[i]);
+        // 1. Знаходимо індекс символа тексту в алфавіті (alphabet)
+        const charIndexInAlphabet = arrayFromAlphabet.indexOf(text[i]);
+        console.log('Індекс символа тексту в алфавіті:', charIndexInAlphabet);
+        // 2. Знаходимо індекс символа рядку з ключа в алфавіті
+        const keyRowCharIndexInAlphabet = arrayFromAlphabet.indexOf(keyRow[i]);
+        console.log('Індекс символа рядку з ключа в алфавіті:', keyRowCharIndexInAlphabet);
+        // 2. Знаходимо модульну суму алфавітних індексів відповідних літер з тексту для шифрування та рядка із ключа, беремо з алфавіту символ за індексом, що дорівнює цій сумі, та додаємо цей символ у рядок криптограми (result)
+        const indexesModuleSum = getModuleSum(charIndexInAlphabet, keyRowCharIndexInAlphabet, arrayFromAlphabet.length);
+        console.log('Модульна сума індексів:', indexesModuleSum);
+        console.log('Символ в алфавіті за цим індексом:', arrayFromAlphabet[indexesModuleSum]);
+        result += arrayFromAlphabet[indexesModuleSum];
+    }
+    // Вставляємо зашифрований текст (критпограму) в поле Завдання 2 для криптограми
+    document.getElementById('task4Answer').value = result;
 };
