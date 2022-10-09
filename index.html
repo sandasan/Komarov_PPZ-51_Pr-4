@@ -1,0 +1,152 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- load MUI -->
+  <link href="https://cdn.muicss.com/mui-0.10.3/css/mui.min.css" rel="stylesheet" type="text/css" />
+  <link href="app.css" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.muicss.com/mui-0.10.3/js/mui.min.js"></script>
+  <script src="app.js"></script>
+</head>
+
+<body>
+  <div class="mui-container-fluid">
+    <div class="mui-appbar">
+      <div class="mui--text-display1 centralized">Практична робота 4</div>
+    </div>
+    <!-- Набір вкладок -->
+    <ul class="mui-tabs__bar mui-tabs__bar--justified">
+      <li class="mui--is-active"><a data-mui-toggle="tab" data-mui-controls="pane-justified-1">Завдання 1</a></li>
+      <li><a data-mui-toggle="tab" data-mui-controls="pane-justified-2">Завдання 2</a></li>
+      <li><a data-mui-toggle="tab" data-mui-controls="pane-justified-3">Завдання 3</a></li>
+      <li><a data-mui-toggle="tab" data-mui-controls="pane-justified-4">Завдання 4</a></li>
+      <li><a data-mui-toggle="tab" data-mui-controls="pane-justified-5">Завдання 5</a></li>
+    </ul>
+    <!-- Вкладка Завдання 1 -->
+    <div class="mui-tabs__pane mui--is-active" id="pane-justified-1">
+      <div class="mui-container-fluid">
+        <!-- Заголовок з описом Завдання 1 -->
+        <div class="task-header">
+          <strong>Завдання 1.</strong> Зашифрувати своє прізвище над латинським алфавітом за допомогою шифру
+          однобуквеної заміни.
+        </div>
+        <div class="centralized task-description">
+          <div>
+            Цифри - порядковий номер літери Латинського алфавіту + знак підкреслення в кінці:
+          </div>
+          <div>
+            00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26
+          </div>
+        </div>
+        <div class="mui-textfield centralized">
+          <label>Текст для шифрування (великими літерами, за замовченням KOMAROV)</label>
+          <input class="centralized" type="text" id="task1Text">
+        </div>
+        <div class="mui-textfield centralized">
+          <label>Ключ підстановки (за замовченням 10 22 17 07 15 19 01 13 20 26 03 14 25 04 09 05 02 24 21 06 00 08 23
+            12 16 11
+            18)</label>
+          <input class="centralized" type="text" id="task1Key">
+          <div class="centralized"><button type="submit" class="mui-btn mui-btn--primary mui-btn--raised"
+              onclick="task1GenerateKey()">Згенерувати</button>
+          </div>
+        </div>
+        <div class="mui-textfield centralized">
+          <label>Криптограма</label>
+          <input class="centralized" type="text" id="task1Answer">
+        </div>
+        <div class="centralized"><button type="submit" class="mui-btn mui-btn--primary mui-btn--raised" onclick="task1Submit(
+              document.getElementById('task1Text').value.length == 0 ? undefined : 
+              document.getElementById('task1Text').value, 
+              document.getElementById('task1Key').value.length == 0 ? undefined : 
+              document.getElementById('task1Key').value
+            )">Зашифрувати</button>
+        </div>
+      </div>
+    </div>
+    <!-- Вкладка Завдання 2 -->
+    <div class="mui-tabs__pane" id="pane-justified-2">
+      <div class="mui-container-fluid">
+        <!-- Заголовок з описом Завдання 2 -->
+        <div class="task-header"><strong>Завдання 2.</strong> Зашифрувати своє прізвище над латинським алфавітом за
+          допомогою гаслового шифру.</div>
+        <div class="mui-textfield centralized">
+          <label>Текст для шифрування (великими літерами, за замовченням KOMAROV)</label>
+          <input class="centralized" type="text" id="task2Text">
+        </div>
+        <div class="mui-textfield centralized">
+          <label>Гасло для шифрування (великими літерами без повторів літер, з символом підкреслення вкінці, за
+            замовченням UKRAINEVYCTO_)</label>
+          <input class="centralized" type="text" id="task2Key">
+          <div class="centralized"><button type="submit" class="mui-btn mui-btn--primary mui-btn--raised"
+              onclick="task2GenerateKey()">Згенерувати</button>
+          </div>
+        </div>
+        <div class="mui-textfield centralized">
+          <label>Криптограма</label>
+          <input class="centralized" type="text" id="task2Answer">
+        </div>
+        <div class="centralized"><button type="submit" class="mui-btn mui-btn--primary mui-btn--raised" onclick="task2Submit(
+                document.getElementById('task2Text').value.length == 0 ? undefined : 
+                document.getElementById('task2Text').value, 
+                document.getElementById('task2Key').value.length == 0 ? undefined : 
+                document.getElementById('task2Key').value
+              )">Зашифрувати</button>
+        </div>
+      </div>
+    </div>
+    <!-- Вкладка Завдання 3 -->
+    <div class="mui-tabs__pane" id="pane-justified-3">
+      <div class="mui-container-fluid">
+        <!-- Заголовок з описом Завдання 3 -->
+        <div class="task-header"><strong>Завдання 3.</strong> Зашифрувати своє прізвище над латинським алфавітом за
+          допомогою шифру Віженера з довільно вибраним разовим ключем.</div>
+        <div class="mui-textfield centralized">
+          <label>Текст для шифрування (великими літерами, за замовченням KOMAROV)</label>
+          <input class="centralized" type="text" id="task3Text">
+        </div>
+        <div class="mui-textfield centralized">
+          <label>Ключ для шифрування (довільне слово великими літерами, за
+            замовченням WINNER)</label>
+          <input class="centralized" type="text" id="task3Key">
+          <div class="centralized"><button type="submit" class="mui-btn mui-btn--primary mui-btn--raised"
+              onclick="task3GenerateKey()">Згенерувати</button>
+          </div>
+        </div>
+        <div class="mui-textfield centralized">
+          <label>Криптограма</label>
+          <input class="centralized" type="text" id="task3Answer">
+        </div>
+        <div class="centralized"><button type="submit" class="mui-btn mui-btn--primary mui-btn--raised" onclick="task3Submit(
+                  document.getElementById('task3Text').value.length == 0 ? undefined : 
+                  document.getElementById('task3Text').value, 
+                  document.getElementById('task3Key').value.length == 0 ? undefined : 
+                  document.getElementById('task3Key').value
+                )">Зашифрувати</button>
+        </div>
+      </div>
+    </div>
+    <!-- Вкладка Завдання 4 -->
+    <div class="mui-tabs__pane" id="pane-justified-4">
+      <div class="mui-container-fluid">
+        <!-- Заголовок з описом Завдання 4 -->
+        <div class="task-header"><strong>Завдання 4.</strong> Зашифрувати своє прізвище над латинським алфавітом за
+          допомогою шифру Плейфера. Для створення ключа скористатись ключем, отриманим в завданні 1.</div>
+      </div>
+    </div>
+    <!-- Вкладка Завдання 5 -->
+    <div class="mui-tabs__pane" id="pane-justified-5">
+      <div class="mui-container-fluid">
+        <!-- Заголовок з описом Завдання 5 -->
+        <div class="task-header"><strong>Завдання 5.</strong> Зашифрувати шифром вертикальної перестановки з ключем
+          довжини 7 своє прізвище, ім’я, по-батькові довжиною не менше 50-и символів на будь-якій європейській мові.
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

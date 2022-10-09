@@ -1,0 +1,17 @@
+.centralized {
+    text-align: center;
+}
+
+.task-header {
+    text-align: center;
+    font-size: 3vh;
+    padding: 3vh;
+}
+
+.task1-code-input {
+    margin: 4vh;
+}
+
+.task-description{
+    margin: 3vh;
+}
