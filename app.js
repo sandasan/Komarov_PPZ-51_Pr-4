@@ -235,9 +235,8 @@ function task4GenerateKey() {
     // document.getElementById('task4Key').value = result;
 };
 
-// Функція шифрування текста для Завдання 3
-function task4Submit(text = defaultText, key) {
-    let result = '';
+// Функція для перевірки даних ключа (key)
+function checkKeyData(key) {
     // Змінна для помітки, що у масиві key є хоча б одне значення 'undefined'
     let isKeyContainsUndefined = false;
     // Перевіряємо масив key на значення 'undefined' хоча б одного елементу
@@ -254,8 +253,15 @@ function task4Submit(text = defaultText, key) {
     if (isKeyContainsUndefined) {
         key = defaultTask4Key;
     }
+    return key;
+};
+
+// Функція шифрування текста для Завдання 3
+function task4Submit(text = defaultText, key) {
+    let result = '';
+    const checkedKey = checkKeyData(key);
     console.log('text:', text);
-    console.log('key:', key);
+    console.log('checkedKey:', checkedKey);
     // Вставляємо зашифрований текст (критпограму) в поле Завдання 2 для криптограми
     // document.getElementById('task4Answer').value = result;
 };
