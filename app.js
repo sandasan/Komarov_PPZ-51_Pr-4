@@ -1,5 +1,7 @@
-// Текст за замовчуванням для Завдань 1, 2
+// Текст за замовчуванням для Завдань 1, 2, 3, 4
 const defaultText = 'KOMAROV';
+// Текст за замовчуванням для Завдання 5
+const defaultTask5Text = 'KOMAROV';
 // Ключ за замовчуванням для Завдання 1
 const defaultTask1Key = '10 22 17 07 15 19 01 13 20 26 03 14 25 04 09 05 02 24 21 06 00 08 23 12 16 11 18';
 // Алфавіт
@@ -17,6 +19,9 @@ const defaultTask4Key = [
     ['V', 'G', 'A', 'I', 'X'],
     ['M', '-', 'Q', 'L', 'S']
 ];
+
+// Ключ за замовчуванням для Завдання 5
+const defaultTask5Key = 'FOREVER';
 
 // Функція для отримання випадкового цілого числа у діапазоні від 0 до max
 function getRandomInt(max) {
@@ -404,7 +409,7 @@ function task5GenerateKey() {
 };
 
 // Функція шифрування текста для Завдання 5
-function task5Submit(text = defaultText, key = defaultTask3Key) {
+function task5Submit(text = defaultTask5Text, key = defaultTask5Key) {
     let result = '';
     // Формуємо рядок довжини тексту для шифрування із ключа, заповнюючи його символами ключа, поки він весь не заповниться
     let keyRow = '';
