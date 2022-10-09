@@ -138,7 +138,7 @@ function task2Submit(text = defaultText, key = slogan) {
         // Інакше (якщо такого символу нема) додаємо далі у таблицю замін найперший символ з алфавіту, який не зустрічається в рядку ключа (key)
         else {
             // Поки рядок ключа містить символ алвавіту за індексом alphabetCharIndex, переходимо до наступного індексу
-            while(key.includes(arrayFromAlphabet[alphabetCharIndex])) {
+            while (key.includes(arrayFromAlphabet[alphabetCharIndex])) {
                 alphabetCharIndex++;
             }
             // А коли такого символу немає, - дописуємо його в таблицю замін
@@ -223,16 +223,56 @@ function task3Submit(text = defaultText, key = defaultTask3Key) {
         console.log('Символ в алфавіті за цим індексом:', arrayFromAlphabet[indexesModuleSum]);
         result += arrayFromAlphabet[indexesModuleSum];
     }
-    // Вставляємо зашифрований текст (критпограму) в поле Завдання 2 для криптограми
+    // Вставляємо зашифрований текст (критпограму) в поле Завдання 3 для криптограми
     document.getElementById('task3Answer').value = result;
 };
 
-// Функція генерування ключа для Завдання 3
+// Функція генерування ключа для Завдання 4
 function task4GenerateKey() {
     // Змінна для формування ключа
-    let result = '';
+    let result = shuffle(defaultTask4Key);
     // Вставляємо ключ у поле для ввода ключа
-    // document.getElementById('task4Key').value = result;
+    fillKeyTable(result);
+};
+
+// Функція для виставлення значень ключа в таблицю на сторінці
+function fillKeyTable(array) {
+    for (let i = 0; i < array.length; i++) {
+        for (let j = 0; j < array[0].length; j++) {
+            document.getElementById('task4Key-' + (i + 1) + '-' + (j + 1)).value = array[i][j];
+        }
+    }
+};
+
+// Функція для перемішування вмісту масиву
+function shuffle(array) {
+    // Перетворюємо вхідний двомірний масив на одновимірний
+    var arr1d = [].concat.apply([], array);
+    console.log('arr1d:', arr1d);
+
+    var m = arr1d.length, t, i;
+
+    // While there remain elements to shuffle…
+    while (m) {
+
+        // Pick a remaining element…
+        i = Math.floor(Math.random() * m--);
+
+        // And swap it with the current element.
+        t = arr1d[m];
+        arr1d[m] = arr1d[i];
+        arr1d[i] = t;
+    }
+
+    var arr2d = [];
+    for (var i = 0; i < 6; i++) {
+        arr2d[i] = [];
+        for (var j = 0; j < 5; j++) {
+            arr2d[i][j] = arr1d[i * 5 + j];
+        }
+    }
+
+    return arr2d;
 };
 
 // Функція для перевірки даних ключа (key)
@@ -256,12 +296,139 @@ function checkKeyData(key) {
     return key;
 };
 
+// Функція для отримання позиції (i, j) символа
+function getSymbolPosition(symbol, key) {
+    for (let i = 0; i < key.length; i++) {
+        for (let j = 0; j < key[0].length; j++) {
+            if (key[i][j] == symbol) {
+                let result = {};
+                result.i = i;
+                result.j = j;
+                return result;
+            }
+        }
+    }
+};
+
+// Функція для отримання правого символа
+function getSymbolToTheRight(symbol, key) {
+    const symbolPosition = getSymbolPosition(symbol, key);
+    const result = symbolPosition.j == key[0].length - 1 ?
+        key[symbolPosition.i][0] :
+        key[symbolPosition.i][symbolPosition.j + 1];
+    return result;
+}
+
+// Функція для отримання нижчого символа
+function getSymbolToTheDown(symbol, key) {
+    const symbolPosition = getSymbolPosition(symbol, key);
+    const result = symbolPosition.i == key.length - 1 ?
+        key[0][symbolPosition.j] :
+        key[symbolPosition.i + 1][symbolPosition.j];
+    return result;
+}
+
+// Функція для отримання горизонтально розміщеного символа
+function getSymbolToTheHorizont(symbolMain, symbolHelper, key) {
+    const symbolMainPosition = getSymbolPosition(symbolMain, key);
+    const symbolHelperPosition = getSymbolPosition(symbolHelper, key);
+    const result = key[symbolMainPosition.i][symbolHelperPosition.j];
+    return result;
+}
+
 // Функція шифрування текста для Завдання 3
 function task4Submit(text = defaultText, key) {
     let result = '';
+    // Перевіряємо ключ на наявність невизначених значень
     const checkedKey = checkKeyData(key);
     console.log('text:', text);
     console.log('checkedKey:', checkedKey);
+
+    // Якщо текст має непарну кількість символів, доповнюємо його крапкою
+    if (text.length % 2 == 1) {
+        text += '.';
+    }
+
+    // Замінюємо символи тексту згідно з ключем за правилами шифру Плейфера
+    for (let i = 0; i < text.length; i += 2) {
+        // Знаходимо позиції символів у ключі
+        let symbol1Position = getSymbolPosition(text[i], checkedKey);
+        let symbol1 = text[i];
+        console.log('symbol1:', symbol1);
+        console.log('symbol1Position:', symbol1Position);
+        let symbol2Position = getSymbolPosition(text[i + 1], checkedKey);
+        let symbol2 = text[i + 1];
+        console.log('symbol2:', symbol2);
+        console.log('symbol2Position:', symbol2Position);
+
+        // Якщо пара символів знаходиться в одному рядку, то у криптограму додаємо символи, кожен з яких розміщений на один правіше відповідного символа пари
+        if (symbol1Position.i == symbol2Position.i) {
+            console.log('getSymbolToTheRight');
+            result += getSymbolToTheRight(symbol1, checkedKey) + getSymbolToTheRight(symbol2, checkedKey);
+        }
+
+        // Якщо пара символів знаходиться в одному стовпчику, то у криптограму додаємо символи, кожен з яких розміщений на один нижче відповідного символа пари
+        else if (symbol1Position.j == symbol2Position.j) {
+            console.log('getSymbolToTheDown');
+            result += getSymbolToTheDown(symbol1, checkedKey) + getSymbolToTheDown(symbol2, checkedKey);
+        }
+
+        // Інакше у криптограму додаємо символи за таким принципом: кожен символ замінюємо тим символом ключа, який знаходиться у тому ж рядку, що даний, та на стовпці іншого символа
+        else {
+            console.log('getSymbolToTheHorizont');
+            result += getSymbolToTheHorizont(symbol1, symbol2, checkedKey) + getSymbolToTheHorizont(symbol2, symbol1, checkedKey);
+        }
+    }
     // Вставляємо зашифрований текст (критпограму) в поле Завдання 2 для криптограми
-    // document.getElementById('task4Answer').value = result;
+    document.getElementById('task4Answer').value = result;
+};
+
+// Функція генерування ключа для Завдання 5
+function task5GenerateKey() {
+    // Змінна для формування ключа
+    let result = '';
+    // Обчислюємо довжину ключа (6-9 символів, але не більше за довжину тексту для шифрування)
+    const keyLength = getKeyLength();
+    console.log('Довжина ключа:', keyLength);
+    // Масив з символів алфавіту
+    const arrayFromAlphabet = alphabet.split(' ');
+    // Генеруємо ключ
+    for (let i = 0; i < keyLength; i++) {
+        // Генеруємо число із заданого діапазону (00 - 25), виключаючи індекс 26 (arrayFromAlphabet.length - 1) - символа підкреслення
+        let generatedNumber = getRandomInt(arrayFromAlphabet.length - 1);
+        // Додаємо у рядок, що зберігається у змінній ключа, символ з алфавіту за щойно згенерованим індексом
+        result += arrayFromAlphabet[generatedNumber];
+    }
+    // Вставляємо ключ у поле для ввода ключа
+    document.getElementById('task5Key').value = result;
+};
+
+// Функція шифрування текста для Завдання 5
+function task5Submit(text = defaultText, key = defaultTask3Key) {
+    let result = '';
+    // Формуємо рядок довжини тексту для шифрування із ключа, заповнюючи його символами ключа, поки він весь не заповниться
+    let keyRow = '';
+    for (let i = 0; i < text.length; i++) {
+        keyRow += key[i % key.length];
+    }
+    console.log('text:', text);
+    console.log('keyRow:', keyRow);
+    // Масив з символів алфавіту
+    const arrayFromAlphabet = alphabet.split(' ');
+    for (let i = 0; i < text.length; i++) {
+        console.log('char:', text[i]);
+        // 1. Знаходимо індекс символа тексту в алфавіті (alphabet)
+        const charIndexInAlphabet = arrayFromAlphabet.indexOf(text[i]);
+        console.log('Індекс символа тексту в алфавіті:', charIndexInAlphabet);
+        // 2. Знаходимо індекс символа рядку з ключа в алфавіті
+        const keyRowCharIndexInAlphabet = arrayFromAlphabet.indexOf(keyRow[i]);
+        console.log('Індекс символа рядку з ключа в алфавіті:', keyRowCharIndexInAlphabet);
+        // 2. Знаходимо модульну суму алфавітних індексів відповідних літер з тексту для шифрування та рядка із ключа, беремо з алфавіту символ за індексом, що дорівнює цій сумі, та додаємо цей символ у рядок криптограми (result)
+        const indexesModuleSum = getModuleSum(charIndexInAlphabet, keyRowCharIndexInAlphabet, arrayFromAlphabet.length);
+        console.log('Модульна сума індексів:', indexesModuleSum);
+        console.log('Символ в алфавіті за цим індексом:', arrayFromAlphabet[indexesModuleSum]);
+        result += arrayFromAlphabet[indexesModuleSum];
+    }
+    // Вставляємо зашифрований текст (критпограму) в поле Завдання 5 для криптограми
+    document.getElementById('task5Answer').value = result;
 };
