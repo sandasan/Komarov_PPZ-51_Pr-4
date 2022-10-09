@@ -231,48 +231,31 @@ function task3Submit(text = defaultText, key = defaultTask3Key) {
 function task4GenerateKey() {
     // Змінна для формування ключа
     let result = '';
-    // Обчислюємо довжину ключа (6-9 символів, але не більше за довжину тексту для шифрування)
-    const keyLength = getKeyLength();
-    console.log('Довжина ключа:', keyLength);
-    // Масив з символів алфавіту
-    const arrayFromAlphabet = alphabet.split(' ');
-    // Генеруємо ключ
-    for (let i = 0; i < keyLength; i++) {
-        // Генеруємо число із заданого діапазону (00 - 25), виключаючи індекс 26 (arrayFromAlphabet.length - 1) - символа підкреслення
-        let generatedNumber = getRandomInt(arrayFromAlphabet.length - 1);
-        // Додаємо у рядок, що зберігається у змінній ключа, символ з алфавіту за щойно згенерованим індексом
-        result += arrayFromAlphabet[generatedNumber];
-    }
     // Вставляємо ключ у поле для ввода ключа
-    document.getElementById('task4Key').value = result;
+    // document.getElementById('task4Key').value = result;
 };
 
 // Функція шифрування текста для Завдання 3
-function task4Submit(text = defaultText, key = defaultTask3Key) {
+function task4Submit(text = defaultText, key) {
     let result = '';
-    // Формуємо рядок довжини тексту для шифрування із ключа, заповнюючи його символами ключа, поки він весь не заповниться
-    let keyRow = '';
-    for (let i = 0; i < text.length; i++) {
-        keyRow += key[i % key.length];
+    // Змінна для помітки, що у масиві key є хоча б одне значення 'undefined'
+    let isKeyContainsUndefined = false;
+    // Перевіряємо масив key на значення 'undefined' хоча б одного елементу
+    key.forEach((row) => {
+        row.forEach((elenent) => {
+            if (!elenent) {
+                isKeyContainsUndefined = true;
+                return;
+            }
+        });
+        if (isKeyContainsUndefined) return;
+    })
+    // Якщо масив key містить елемент із невизначеним ('udefined') значенням, присвоюємо йому значення за замовченням
+    if (isKeyContainsUndefined) {
+        key = defaultTask4Key;
     }
     console.log('text:', text);
-    console.log('keyRow:', keyRow);
-    // Масив з символів алфавіту
-    const arrayFromAlphabet = alphabet.split(' ');
-    for (let i = 0; i < text.length; i++) {
-        console.log('char:', text[i]);
-        // 1. Знаходимо індекс символа тексту в алфавіті (alphabet)
-        const charIndexInAlphabet = arrayFromAlphabet.indexOf(text[i]);
-        console.log('Індекс символа тексту в алфавіті:', charIndexInAlphabet);
-        // 2. Знаходимо індекс символа рядку з ключа в алфавіті
-        const keyRowCharIndexInAlphabet = arrayFromAlphabet.indexOf(keyRow[i]);
-        console.log('Індекс символа рядку з ключа в алфавіті:', keyRowCharIndexInAlphabet);
-        // 2. Знаходимо модульну суму алфавітних індексів відповідних літер з тексту для шифрування та рядка із ключа, беремо з алфавіту символ за індексом, що дорівнює цій сумі, та додаємо цей символ у рядок криптограми (result)
-        const indexesModuleSum = getModuleSum(charIndexInAlphabet, keyRowCharIndexInAlphabet, arrayFromAlphabet.length);
-        console.log('Модульна сума індексів:', indexesModuleSum);
-        console.log('Символ в алфавіті за цим індексом:', arrayFromAlphabet[indexesModuleSum]);
-        result += arrayFromAlphabet[indexesModuleSum];
-    }
+    console.log('key:', key);
     // Вставляємо зашифрований текст (критпограму) в поле Завдання 2 для криптограми
-    document.getElementById('task4Answer').value = result;
+    // document.getElementById('task4Answer').value = result;
 };
