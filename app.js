@@ -1,7 +1,7 @@
 // Текст за замовчуванням для Завдань 1, 2, 3, 4
 const defaultText = 'KOMAROV';
 // Текст за замовчуванням для Завдання 5
-const defaultTask5Text = 'KOMAROV';
+const defaultTask5Text = 'KOMAROV OLEKSANDR VALERIIOVYCH';
 // Ключ за замовчуванням для Завдання 1
 const defaultTask1Key = '10 22 17 07 15 19 01 13 20 26 03 14 25 04 09 05 02 24 21 06 00 08 23 12 16 11 18';
 // Алфавіт
@@ -411,29 +411,87 @@ function task5GenerateKey() {
 // Функція шифрування текста для Завдання 5
 function task5Submit(text = defaultTask5Text, key = defaultTask5Key) {
     let result = '';
-    // Формуємо рядок довжини тексту для шифрування із ключа, заповнюючи його символами ключа, поки він весь не заповниться
-    let keyRow = '';
-    for (let i = 0; i < text.length; i++) {
-        keyRow += key[i % key.length];
-    }
+    // Масив для запам'ятовування індексів символів рядку ключа
+    let keyCharsIndexes = [];
+    // Масив для формування криптограми
+    let keyAndTextChars = [];
     console.log('text:', text);
-    console.log('keyRow:', keyRow);
+    console.log('key:', key);
+    // Видаляємо з тексту пробіли
+    const textWithoutSpaces = text.split(' ').join('');
+    console.log('textWithoutSpaces:', textWithoutSpaces);
+    // Розраховуємо кількість рядків, потрібну для розміщення у двовимірному масиві рядка ключа (key) та тексту (text): округлюємо ділення в більшу сторону, щоб місць хватило для всіх символів (останній рядок може бути неповним)
+    const keyAndTextCharsRows = Math.ceil(textWithoutSpaces.length / key.length);
     // Масив з символів алфавіту
     const arrayFromAlphabet = alphabet.split(' ');
-    for (let i = 0; i < text.length; i++) {
-        console.log('char:', text[i]);
-        // 1. Знаходимо індекс символа тексту в алфавіті (alphabet)
-        const charIndexInAlphabet = arrayFromAlphabet.indexOf(text[i]);
-        console.log('Індекс символа тексту в алфавіті:', charIndexInAlphabet);
-        // 2. Знаходимо індекс символа рядку з ключа в алфавіті
-        const keyRowCharIndexInAlphabet = arrayFromAlphabet.indexOf(keyRow[i]);
-        console.log('Індекс символа рядку з ключа в алфавіті:', keyRowCharIndexInAlphabet);
-        // 2. Знаходимо модульну суму алфавітних індексів відповідних літер з тексту для шифрування та рядка із ключа, беремо з алфавіту символ за індексом, що дорівнює цій сумі, та додаємо цей символ у рядок криптограми (result)
-        const indexesModuleSum = getModuleSum(charIndexInAlphabet, keyRowCharIndexInAlphabet, arrayFromAlphabet.length);
-        console.log('Модульна сума індексів:', indexesModuleSum);
-        console.log('Символ в алфавіті за цим індексом:', arrayFromAlphabet[indexesModuleSum]);
-        result += arrayFromAlphabet[indexesModuleSum];
+    // Формуємо таблицю для складання шифру
+    const arrayFromKeyChars = key.split('');
+    keyAndTextChars[0] = arrayFromKeyChars;
+    for (let i = 0; i < keyAndTextCharsRows; i++) {
+        // Записуємо у рядок [i + 1], тому що в перший рядок (з індексом 0) вже записали ключ
+        keyAndTextChars[i + 1] = [];
+        for (let j = 0; j < key.length; j++) {
+            // Записуємо текст (text) у двовимірний масив 
+            keyAndTextChars[i + 1][j] = textWithoutSpaces[i * key.length + j];
+        }
     }
+    console.log('keyAndTextChars:', keyAndTextChars);
+
+    // Призначаємо літерам ключа порядкові номери за їх позиціями у алфавіті, але номери йдуть по порядку без повтору, та у однакових символів номери зростають по мірі появлення символів зліва направо (наприклад, для слова "АГА": А - 1, А - 2, Г - 3)
+    let charNumber = 0;
+    let keyCharsNumbersByAlphabet = {};
+    // Формуємо список використаних літер ключа
+    const usedKeyCharsList = {};
+    arrayFromKeyChars.forEach((char) => {
+        // Індекс використовується, а потім збільшується на 1
+        usedKeyCharsList[charNumber++] = {char, isUsed: false};
+    });
+    console.log('usedKeyCharsList:', usedKeyCharsList);
+
+    // Функція для отримання рядку з усіх наявних елементів у стовпці index двовимірного масиву array
+    function getRowByIndex(index, array) {
+        let result = '';
+        for (let i = 1; i < array.length; i++) {
+            if (array[i][index]) {
+                result += array[i][index];
+            }
+        }
+        return result;
+    };
+
+    // Проходимося з алфавітом по кожному символу рядка ключа та відмічаємо цей символ порядковим номером (таким чином ми їх як би впорядковуємо за алфавітом), та записуємо для цього символа рядок із символів відповідного стовпця масива keyAndTextChars рядка ключа (key) та тексту (text). З набору стовпців (з кожного стовпця усі символи, починаючи з другого (з індексом 1)) масиву keyAndTextChars формується криптограма
+    charNumber = 0;
+    arrayFromAlphabet.forEach((char) => {
+        for (let i = 0; i < key.length; i++) {
+            // Якщо цей символ ще не використовувався та співпадає з поточним символом з алфавіту
+            if (!usedKeyCharsList[i].isUsed && arrayFromKeyChars[i] == char) {
+                // Індекс збільшується на 1, а потім використовується
+                let encryptioPart = getRowByIndex(i, keyAndTextChars);
+                keyCharsNumbersByAlphabet[++charNumber] = {char, row: encryptioPart};
+                usedKeyCharsList[i].isUsed = true;
+                // Додаємо (зберігаємо) знайдену послідовність символів у рядок криптограми
+                result += encryptioPart;
+            }
+        }
+    });
+    console.log('keyCharsNumbersByAlphabet:', keyCharsNumbersByAlphabet);
+
+    // Запам'ятовуємо в масив індекси символів рядку ключа
+    for (let i = 0; i < key.length; i++) {
+        console.log('key char:', key[i]);
+        // 1. Знаходимо індекс символа ключа в алфавіті (alphabet)
+        const charIndexInAlphabet = arrayFromAlphabet.indexOf(key[i]);
+        console.log('Індекс символа ключа в алфавіті:', charIndexInAlphabet);
+        // 2. Додаємо цей індекс в масив індексів символів рядку ключа
+        keyCharsIndexes.push(getTwoDigitNumberAsString(charIndexInAlphabet));
+    }
+
+    console.log('keyCharsIndexes:', keyCharsIndexes);
+    // Сортуємо масив індексів символів рядку ключа
+    keyCharsIndexes.sort();
+    console.log('keyCharsIndexes:', keyCharsIndexes);
+
+
     // Вставляємо зашифрований текст (критпограму) в поле Завдання 5 для криптограми
     document.getElementById('task5Answer').value = result;
 };
